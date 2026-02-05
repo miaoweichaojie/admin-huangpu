@@ -1,0 +1,7 @@
+{
+  "name": "某分局情指智慧大屏",
+  "description": "一套深蓝色科技风格的情指中心智慧大屏，集成实时情报分析、警情监控、大客流预测及AI智能助手。",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
