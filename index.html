@@ -1,71 +1,78 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>黄浦区情指大屏 - 智慧大脑</title>
+    <title>智慧指挥大屏 - 黄浦区智能孪生</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <!-- 使用国内极速 CDN (BootCDN) 确保 Leaflet 核心库加载成功 -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <script src="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
         
         @keyframes rotate-slow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes float-lively { 
-          0%, 100% { transform: translateY(0) rotate(0deg); } 
-          25% { transform: translateY(-12px) rotate(2deg); }
-          75% { transform: translateY(-6px) rotate(-2deg); }
-        }
-        @keyframes scan-line-move {
-          0% { top: -100%; opacity: 0; }
-          50% { opacity: 0.8; }
-          100% { top: 100%; opacity: 0; }
-        }
-        @keyframes border-pulse {
-          0%, 100% { box-shadow: 0 0 15px rgba(34, 211, 238, 0.2); border-color: rgba(34, 211, 238, 0.3); }
-          50% { box-shadow: 0 0 25px rgba(34, 211, 238, 0.5); border-color: rgba(34, 211, 238, 0.6); }
-        }
         @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
         
-        /* 亮色科技背景粒子 */
         @keyframes particle-drift {
           0% { transform: translateY(0) translateX(0); opacity: 0; }
           20% { opacity: 0.6; }
-          80% { opacity: 0.6; }
           100% { transform: translateY(-100vh) translateX(30px); opacity: 0; }
         }
 
-        .tech-scrollbar::-webkit-scrollbar { width: 4px; }
-        .tech-scrollbar::-webkit-scrollbar-track { background: rgba(34, 211, 238, 0.02); }
-        .tech-scrollbar::-webkit-scrollbar-thumb {
-            background: linear-gradient(to bottom, rgba(34, 211, 238, 0.4), rgba(34, 211, 238, 0.8));
+        /* 科技风格滚动条重构 */
+        .tech-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .tech-scrollbar::-webkit-scrollbar-track {
+            background: rgba(34, 211, 238, 0.03);
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+            margin: 4px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+        .tech-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #22d3ee 0%, #0ea5e9 100%);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 12px rgba(34, 211, 238, 0.5);
+            transition: all 0.3s ease;
+        }
+        .tech-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #22d3ee;
+            box-shadow: 0 0 18px rgba(34, 211, 238, 0.8);
+        }
+        .tech-scrollbar::-webkit-scrollbar-thumb:active {
+            background: #ffffff;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
         }
 
-        /* 模组容器升级：更亮、更透 */
+        /* 日间模式滚动条适配 */
+        .day-mode .tech-scrollbar::-webkit-scrollbar-track {
+            background: rgba(14, 165, 233, 0.05);
+            box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.05);
+        }
+        .day-mode .tech-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #0ea5e9 0%, #0284c7 100%);
+            box-shadow: none;
+            border: none;
+        }
+        .day-mode .tech-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #0284c7;
+        }
+
         .tech-module-container {
             position: relative;
-            background: linear-gradient(180deg, rgba(10, 31, 70, 0.75) 0%, rgba(6, 21, 50, 0.85) 100%);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            backdrop-filter: blur(25px);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(56, 189, 248, 0.05);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .day-mode .tech-module-container {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.95) 100%);
-            border: 1px solid rgba(14, 165, 233, 0.15);
-            box-shadow: 0 10px 40px rgba(14, 165, 233, 0.08);
-            color: #1e293b;
+            background: linear-gradient(180deg, rgba(7, 20, 50, 0.85) 0%, rgba(2, 8, 25, 0.95) 100%);
+            border: 1px solid rgba(34, 211, 238, 0.25);
+            backdrop-filter: blur(30px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
         }
 
         .tech-module-corner {
-            position: absolute; width: 14px; height: 14px; border: 2px solid #22d3ee; z-index: 10;
-            filter: drop-shadow(0 0 5px #22d3ee);
-            transition: all 0.5s ease;
+            position: absolute; width: 12px; height: 12px; border: 2px solid #22d3ee; z-index: 10;
         }
-        .day-mode .tech-module-corner { border-color: #0ea5e9; filter: none; }
         .corner-tl { top: -1px; left: -1px; border-right: none; border-bottom: none; }
         .corner-tr { top: -1px; right: -1px; border-left: none; border-bottom: none; }
         .corner-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
@@ -73,35 +80,29 @@
 
         .digital-font { font-family: 'Orbitron', sans-serif; letter-spacing: 1px; }
         
-        /* 亮蓝背景调色 */
         body { 
-          background: radial-gradient(circle at 50% 50%, #0a1f46 0%, #020b1c 100%); 
-          margin: 0; overflow: hidden; font-family: 'Microsoft YaHei', sans-serif; 
-          color: #e2e8f0; transition: all 0.8s ease; 
+          background: #020617; 
+          margin: 0; overflow: hidden; font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; 
+          color: #f1f5f9; 
         }
-        body.day-mode { background: radial-gradient(circle at 50% 50%, #f8fafc 0%, #f1f5f9 100%); color: #1e293b; }
 
-        /* 地图滤镜调亮 & 纯蓝化 */
+        /* 针对高德极夜版瓦片的科技感微调 */
         .tech-map-theme .leaflet-tile-pane {
-            filter: invert(100%) hue-rotate(190deg) brightness(0.85) saturate(1.8) contrast(1.2);
-            transition: filter 0.8s ease-in-out;
+            /* 不再需要 invert，因为高德极夜版原生就是深色 */
+            filter: brightness(0.8) contrast(1.3) saturate(1.8) hue-rotate(-15deg);
+            transition: filter 1s ease;
         }
         
         .day-map-theme .leaflet-tile-pane {
-            filter: saturate(1.2) contrast(1.0) brightness(1.1);
-            transition: filter 0.8s ease-in-out;
+            filter: saturate(1.1) contrast(1.1);
+            transition: filter 1s ease;
         }
         
-        .leaflet-container { background: transparent !important; }
+        .leaflet-container { background: #010411 !important; }
+
         .glow-text { 
             color: #fff;
-            text-shadow: 0 0 10px rgba(34, 211, 238, 0.8), 0 0 20px rgba(34, 211, 238, 0.4); 
-        }
-        .day-mode .glow-text { text-shadow: none; color: #0ea5e9; }
-
-        .particle {
-            position: absolute; background: #38bdf8; border-radius: 50%; pointer-events: none;
-            filter: blur(1px); animation: particle-drift linear infinite;
+            text-shadow: 0 0 15px rgba(34, 211, 238, 0.8); 
         }
     </style>
 <script type="importmap">
@@ -119,6 +120,5 @@
 </head>
 <body id="main-body">
     <div id="root"></div>
-    <script type="module" src="/index.tsx"> </script>
 </body>
 </html>
