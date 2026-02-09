@@ -42,9 +42,8 @@ const Map3D: React.FC<{ isNight: boolean }> = ({ isNight }) => {
   const [isReady, setIsReady] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>('people');
 
-  // 使用高德地图极夜版瓦片源 (Style 8 为深色底图)
-  // 这是国内最常用的指挥中心大屏地图方案之一
-  const AMAP_TILE_URL = 'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}';
+  // 使用标准的 OpenStreetMap 瓦片源
+  const OSM_TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -65,19 +64,20 @@ const Map3D: React.FC<{ isNight: boolean }> = ({ isNight }) => {
         attributionControl: false,
       });
 
-      // 加载高德瓦片
-      L.tileLayer(AMAP_TILE_URL, {
-        subdomains: ['01', '02', '03', '04'],
-        maxZoom: 18,
+      // 加载 OSM 瓦片
+      L.tileLayer(OSM_TILE_URL, {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       }).addTo(map);
 
-      // 黄浦区区域描边
+      // 黄浦区区域描边 - 增加动态发光类
       L.polygon(HUANGPU_BOUNDARY, {
+        className: isNight ? 'animated-boundary' : '',
         color: isNight ? '#22d3ee' : '#0ea5e9',
         weight: 3,
-        opacity: 0.6,
-        fillColor: 'transparent',
-        dashArray: '8, 8',
+        opacity: 0.8,
+        fillColor: isNight ? 'rgba(34, 211, 238, 0.05)' : 'transparent',
+        fillOpacity: 0.2,
       }).addTo(map);
 
       markerLayerRef.current = L.layerGroup().addTo(map);
@@ -130,6 +130,33 @@ const Map3D: React.FC<{ isNight: boolean }> = ({ isNight }) => {
   return (
     <div className={`relative w-full h-full overflow-hidden transition-colors duration-1000 ${isNight ? 'bg-[#010411]' : 'bg-[#f1f5f9]'}`}>
       
+      {/* 中心视觉框 - 动态发光流光效果 */}
+      {isNight && (
+        <div className="absolute inset-x-[15%] inset-y-[10%] z-10 pointer-events-none">
+          {/* 四角高亮 */}
+          <div className="absolute top-0 left-0 w-24 h-24 border-t-2 border-l-2 border-cyan-400 opacity-60"></div>
+          <div className="absolute top-0 right-0 w-24 h-24 border-t-2 border-r-2 border-cyan-400 opacity-60"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 border-b-2 border-l-2 border-cyan-400 opacity-60"></div>
+          <div className="absolute bottom-0 right-0 w-24 h-24 border-b-2 border-r-2 border-cyan-400 opacity-60"></div>
+          
+          {/* 循环流体线 (SVG) */}
+          <svg className="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 100 100" preserveAspectRatio="none">
+             <rect x="0" y="0" width="100" height="100" fill="none" stroke="url(#flowGradient)" strokeWidth="0.5" />
+             <defs>
+               <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                 <stop offset="0%" stopColor="transparent" />
+                 <stop offset="50%" stopColor="#22d3ee" />
+                 <stop offset="100%" stopColor="transparent" />
+               </linearGradient>
+             </defs>
+          </svg>
+          
+          {/* 边缘动态光点 */}
+          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-[shimmer_3s_infinite]"></div>
+          <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-[shimmer_3s_infinite_reverse]"></div>
+        </div>
+      )}
+
       {/* 倾斜的 3.5D 视角地图层 */}
       <div 
         className={`w-full h-full transform-gpu transition-all duration-1000 ease-out origin-center pointer-events-auto ${isNight ? 'tech-map-theme' : 'day-map-theme'}`}
@@ -141,7 +168,7 @@ const Map3D: React.FC<{ isNight: boolean }> = ({ isNight }) => {
       {!isReady && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#010411] z-[1000]">
           <div className="w-16 h-16 border-4 border-cyan-500/10 border-t-cyan-400 rounded-full animate-spin mb-4"></div>
-          <p className="text-cyan-400 font-black tracking-widest animate-pulse uppercase">正在同步高德感知矩阵数据...</p>
+          <p className="text-cyan-400 font-black tracking-widest animate-pulse uppercase">正在同步 OpenStreetMap 核心矩阵数据...</p>
         </div>
       )}
 

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import Header from './components/Header';
 import Map3D from './components/Map3D';
@@ -8,7 +9,9 @@ import DoubleLeaderBoard from './components/DoubleLeaderBoard';
 import UAVBoard from './components/UAVBoard';
 import AIAgent from './components/AIAgent';
 import MapOverlayStats from './components/MapOverlayStats';
-import DataBaseBoard from './components/DataBaseBoard';
+import WeeklySocialAnalysisBoard from './components/WeeklySocialAnalysisBoard';
+import DutyRosterBoard from './components/DutyRosterBoard';
+import PoliceCalendarBoard from './components/PoliceCalendarBoard';
 
 const ParticleBackground = ({ isNight }: { isNight: boolean }) => {
   const particles = useMemo(() => {
@@ -67,7 +70,6 @@ const App: React.FC = () => {
     <div className={`relative w-screen h-screen overflow-hidden flex flex-col font-sans transition-all duration-1000 ${isNight ? 'bg-[#020b1c]' : 'bg-[#f1f5f9]'}`}>
       <ParticleBackground isNight={isNight} />
       
-      {/* 底部微弱的亮蓝遮罩增加深度感 */}
       {isNight && (
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(10,31,70,0.4)_0%,transparent_100%)] z-0 pointer-events-none"></div>
       )}
@@ -82,9 +84,10 @@ const App: React.FC = () => {
         </header>
 
         <main className="flex-1 grid grid-cols-12 gap-6 px-8 py-4 overflow-hidden pointer-events-none">
+          {/* 左侧栏 */}
           <div className="col-span-3 flex flex-col gap-4 overflow-hidden animate-[fadeIn_0.8s_ease-out] pointer-events-auto">
             <div className="flex-[2.5] min-h-0 overflow-hidden drop-shadow-2xl">
-              <DataBaseBoard isNight={isNight} />
+              <WeeklySocialAnalysisBoard isNight={isNight} />
             </div>
             <div className="flex-[3.5] min-h-0 overflow-hidden drop-shadow-2xl">
               <IncidentBoard isNight={isNight} />
@@ -94,6 +97,7 @@ const App: React.FC = () => {
             </div>
           </div>
 
+          {/* 中间栏 */}
           <div className="col-span-6 relative flex flex-col items-center justify-start pt-2 pointer-events-none">
             <div className="absolute top-2 left-2 z-[100] pointer-events-auto scale-75 origin-top-left">
               <AIAgent isNight={isNight} />
@@ -103,14 +107,18 @@ const App: React.FC = () => {
             </div>
           </div>
 
+          {/* 右侧栏：重构布局 */}
           <div className="col-span-3 flex flex-col gap-4 overflow-hidden animate-[fadeIn_0.8s_ease-out_delay-200ms] pointer-events-auto">
-            <div className="flex-[4.5] min-h-0 overflow-hidden drop-shadow-2xl">
-              <IntelligenceBoard isNight={isNight} />
+            <div className="flex-[4] min-h-0 overflow-hidden drop-shadow-2xl">
+              <PoliceCalendarBoard isNight={isNight} />
             </div>
-            <div className="flex-[2.5] min-h-0 overflow-hidden drop-shadow-2xl">
+            <div className="flex-[3.5] min-h-0 overflow-hidden drop-shadow-2xl">
+              <DutyRosterBoard isNight={isNight} />
+            </div>
+            <div className="flex-[1.5] min-h-0 overflow-hidden drop-shadow-2xl">
               <UAVBoard isNight={isNight} />
             </div>
-            <div className="flex-[3] min-h-0 overflow-hidden drop-shadow-2xl">
+            <div className="flex-[1] min-h-0 overflow-hidden drop-shadow-2xl">
               <DoubleLeaderBoard isNight={isNight} />
             </div>
           </div>
