@@ -4,75 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智慧指挥大屏 - 黄浦区智能孪生</title>
+    <title>智慧指挥大屏 - 黄浦区智能平面矩阵</title>
+    <!-- 使用更稳定的 CDN 引入 Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 使用国内极速 CDN (BootCDN) 确保 Leaflet 核心库加载成功 -->
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.css" />
-    <script src="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
         
         @keyframes rotate-slow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
         
-        @keyframes particle-drift {
-          0% { transform: translateY(0) translateX(0); opacity: 0; }
-          20% { opacity: 0.6; }
-          100% { transform: translateY(-100vh) translateX(30px); opacity: 0; }
-        }
-
-        /* 边框流光旋转动画 */
-        @keyframes border-flow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* 地图边界呼吸发光 */
-        @keyframes boundary-pulse {
-            0%, 100% { filter: drop-shadow(0 0 2px #22d3ee); opacity: 0.5; stroke-width: 3; }
-            50% { filter: drop-shadow(0 0 12px #22d3ee); opacity: 1; stroke-width: 5; }
-        }
-
-        /* 科技风格滚动条重构 */
-        .tech-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .tech-scrollbar::-webkit-scrollbar-track {
-            background: rgba(34, 211, 238, 0.03);
-            border-radius: 10px;
-            margin: 4px;
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        }
+        .tech-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .tech-scrollbar::-webkit-scrollbar-track { background: rgba(34, 211, 238, 0.03); border-radius: 10px; margin: 4px; }
         .tech-scrollbar::-webkit-scrollbar-thumb {
             background: linear-gradient(180deg, #22d3ee 0%, #0ea5e9 100%);
             border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 12px rgba(34, 211, 238, 0.5);
-            transition: all 0.3s ease;
-        }
-        .tech-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #22d3ee;
-            box-shadow: 0 0 18px rgba(34, 211, 238, 0.8);
-        }
-        .tech-scrollbar::-webkit-scrollbar-thumb:active {
-            background: #ffffff;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
-        }
-
-        /* 日间模式滚动条适配 */
-        .day-mode .tech-scrollbar::-webkit-scrollbar-track {
-            background: rgba(14, 165, 233, 0.05);
-            box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.05);
-        }
-        .day-mode .tech-scrollbar::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #0ea5e9 0%, #0284c7 100%);
-            box-shadow: none;
-            border: none;
-        }
-        .day-mode .tech-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #0284c7;
         }
 
         .tech-module-container {
@@ -83,9 +31,7 @@
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
         }
 
-        .tech-module-corner {
-            position: absolute; width: 12px; height: 12px; border: 2px solid #22d3ee; z-index: 10;
-        }
+        .tech-module-corner { position: absolute; width: 12px; height: 12px; border: 2px solid #22d3ee; z-index: 10; }
         .corner-tl { top: -1px; left: -1px; border-right: none; border-bottom: none; }
         .corner-tr { top: -1px; right: -1px; border-left: none; border-bottom: none; }
         .corner-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
@@ -93,34 +39,39 @@
 
         .digital-font { font-family: 'Orbitron', sans-serif; letter-spacing: 1px; }
         
-        body { 
-          background: #020617; 
-          margin: 0; overflow: hidden; font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; 
-          color: #f1f5f9; 
-        }
+        body { background: #020617; margin: 0; overflow: hidden; font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; color: #f1f5f9; }
+        .glow-text { color: #fff; text-shadow: 0 0 15px rgba(34, 211, 238, 0.8); }
 
-        /* 针对 OSM 浅色瓦片的深蓝色科技滤镜 */
-        .tech-map-theme .leaflet-tile-pane {
-            filter: invert(100%) hue-rotate(180deg) brightness(0.65) contrast(1.2) saturate(1.4);
-            transition: filter 1s ease;
+        /* Leaflet 容器与滤镜优化 */
+        .leaflet-container { 
+            background-color: #020b1c !important; 
+            width: 100%;
+            height: 100%;
         }
         
-        .day-map-theme .leaflet-tile-pane {
-            filter: saturate(0.8) contrast(1.1);
+        /* 科技感深蓝色地图滤镜 */
+        .leaflet-tile-pane {
+            filter: invert(100%) hue-rotate(180deg) brightness(90%) contrast(110%) saturate(120%) !important;
             transition: filter 1s ease;
         }
-        
-        .leaflet-container { background: #010411 !important; }
+        .day-mode .leaflet-tile-pane {
+            filter: none !important;
+        }
 
-        .glow-text { 
+        .leaflet-control-attribution { display: none !important; }
+        
+        .map-label {
+            background: rgba(2, 6, 23, 0.85);
+            border: 1px solid rgba(34, 211, 238, 0.5);
             color: #fff;
-            text-shadow: 0 0 15px rgba(34, 211, 238, 0.8); 
-        }
-
-        /* 赋予 Leaflet 路径动态发光类 */
-        .animated-boundary {
-            animation: boundary-pulse 4s infinite ease-in-out;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 900;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
             pointer-events: none;
+            transition: all 0.3s ease;
         }
     </style>
 <script type="importmap">
@@ -138,6 +89,5 @@
 </head>
 <body id="main-body">
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
 </body>
 </html>

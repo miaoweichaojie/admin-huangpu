@@ -10,8 +10,8 @@ import UAVBoard from './components/UAVBoard';
 import AIAgent from './components/AIAgent';
 import MapOverlayStats from './components/MapOverlayStats';
 import WeeklySocialAnalysisBoard from './components/WeeklySocialAnalysisBoard';
-import DutyRosterBoard from './components/DutyRosterBoard';
 import PoliceCalendarBoard from './components/PoliceCalendarBoard';
+import DutyTopBar from './components/DutyTopBar';
 
 const ParticleBackground = ({ isNight }: { isNight: boolean }) => {
   const particles = useMemo(() => {
@@ -81,6 +81,7 @@ const App: React.FC = () => {
       <div className="relative z-10 flex flex-col h-full pointer-events-none select-none">
         <header className="pointer-events-auto">
           <Header time={currentTime} isNight={isNight} onToggleTheme={() => setIsNight(!isNight)} />
+          <DutyTopBar isNight={isNight} />
         </header>
 
         <main className="flex-1 grid grid-cols-12 gap-6 px-8 py-4 overflow-hidden pointer-events-none">
@@ -107,18 +108,15 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          {/* 右侧栏：重构布局 */}
+          {/* 右侧栏：重新分配比例以放大双长盯办 */}
           <div className="col-span-3 flex flex-col gap-4 overflow-hidden animate-[fadeIn_0.8s_ease-out_delay-200ms] pointer-events-auto">
-            <div className="flex-[4] min-h-0 overflow-hidden drop-shadow-2xl">
+            <div className="flex-[2] min-h-0 overflow-hidden drop-shadow-2xl">
               <PoliceCalendarBoard isNight={isNight} />
             </div>
-            <div className="flex-[3.5] min-h-0 overflow-hidden drop-shadow-2xl">
-              <DutyRosterBoard isNight={isNight} />
-            </div>
-            <div className="flex-[1.5] min-h-0 overflow-hidden drop-shadow-2xl">
+            <div className="flex-[2.5] min-h-0 overflow-hidden drop-shadow-2xl">
               <UAVBoard isNight={isNight} />
             </div>
-            <div className="flex-[1] min-h-0 overflow-hidden drop-shadow-2xl">
+            <div className="flex-[5.5] min-h-0 overflow-hidden drop-shadow-2xl">
               <DoubleLeaderBoard isNight={isNight} />
             </div>
           </div>
