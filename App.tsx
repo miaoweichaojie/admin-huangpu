@@ -2,15 +2,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Header from './components/Header';
 import Map3D from './components/Map3D';
-import IntelligenceBoard from './components/IntelligenceBoard';
-import IncidentBoard from './components/IncidentBoard';
 import CommandActionBoard from './components/CommandActionBoard';
 import DoubleLeaderBoard from './components/DoubleLeaderBoard';
 import UAVBoard from './components/UAVBoard';
 import AIAgent from './components/AIAgent';
 import MapOverlayStats from './components/MapOverlayStats';
 import WeeklySocialAnalysisBoard from './components/WeeklySocialAnalysisBoard';
-import PoliceCalendarBoard from './components/PoliceCalendarBoard';
+import PublicOpinionBoard from './components/PublicOpinionBoard';
+import IncidentBoard from './components/IncidentBoard';
 import DutyTopBar from './components/DutyTopBar';
 
 const ParticleBackground = ({ isNight }: { isNight: boolean }) => {
@@ -87,11 +86,11 @@ const App: React.FC = () => {
         <main className="flex-1 grid grid-cols-12 gap-6 px-8 py-4 overflow-hidden pointer-events-none">
           {/* 左侧栏 */}
           <div className="col-span-3 flex flex-col gap-4 overflow-hidden animate-[fadeIn_0.8s_ease-out] pointer-events-auto">
-            <div className="flex-[2.5] min-h-0 overflow-hidden drop-shadow-2xl">
+            <div className="flex-[3] min-h-0 overflow-hidden drop-shadow-2xl">
               <WeeklySocialAnalysisBoard isNight={isNight} />
             </div>
-            <div className="flex-[3.5] min-h-0 overflow-hidden drop-shadow-2xl">
-              <IncidentBoard isNight={isNight} />
+            <div className="flex-[3] min-h-0 overflow-hidden drop-shadow-2xl">
+              <PublicOpinionBoard isNight={isNight} />
             </div>
             <div className="flex-[4] min-h-0 overflow-hidden drop-shadow-2xl">
               <CommandActionBoard isNight={isNight} />
@@ -110,13 +109,13 @@ const App: React.FC = () => {
 
           {/* 右侧栏：重新分配比例以放大双长盯办 */}
           <div className="col-span-3 flex flex-col gap-4 overflow-hidden animate-[fadeIn_0.8s_ease-out_delay-200ms] pointer-events-auto">
-            <div className="flex-[2] min-h-0 overflow-hidden drop-shadow-2xl">
-              <PoliceCalendarBoard isNight={isNight} />
+            <div className="flex-[3] min-h-0 overflow-hidden drop-shadow-2xl">
+              <IncidentBoard isNight={isNight} />
             </div>
             <div className="flex-[2.5] min-h-0 overflow-hidden drop-shadow-2xl">
               <UAVBoard isNight={isNight} />
             </div>
-            <div className="flex-[5.5] min-h-0 overflow-hidden drop-shadow-2xl">
+            <div className="flex-[4.5] min-h-0 overflow-hidden drop-shadow-2xl">
               <DoubleLeaderBoard isNight={isNight} />
             </div>
           </div>

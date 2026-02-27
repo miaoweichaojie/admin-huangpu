@@ -62,7 +62,7 @@ const IntelligenceBoard: React.FC<{ isNight: boolean }> = ({ isNight }) => {
       <div className="flex items-center justify-between mb-5 relative z-10">
         <div className="flex items-center gap-3">
           <div className={`w-1.5 h-4 rounded-full transition-colors ${isNight ? 'bg-cyan-400 shadow-[0_0_15px_#22d3ee]' : 'bg-sky-500'}`}></div>
-          <h2 className={`text-base font-black italic tracking-widest uppercase transition-colors ${isNight ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]' : 'text-slate-800'}`}>城区态势 · 智能体征</h2>
+          <h2 className={`text-base font-black italic tracking-widest uppercase transition-colors ${isNight ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]' : 'text-slate-800'}`}>情专融合 · 智能体征</h2>
         </div>
       </div>
 

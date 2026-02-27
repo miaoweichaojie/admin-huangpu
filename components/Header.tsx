@@ -1,5 +1,6 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import CalendarOverlay from './CalendarOverlay';
 
 // 量子矩阵中心动态背景
 const QuantumMatrixBackground = ({ isNight }: { isNight: boolean }) => (
@@ -86,6 +87,7 @@ const WeatherWidget = ({ isNight }: { isNight: boolean }) => (
 );
 
 const Header: React.FC<{ time: Date, isNight: boolean, onToggleTheme: () => void }> = ({ time, isNight, onToggleTheme }) => {
+  const [showCalendar, setShowCalendar] = useState(false);
   const formatTime = (date: Date) => date.toLocaleTimeString('zh-CN', { hour12: false });
   const formatDate = (date: Date) => date.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' });
 
@@ -98,11 +100,22 @@ const Header: React.FC<{ time: Date, isNight: boolean, onToggleTheme: () => void
       {/* 左侧：天气与时间 */}
       <div className="flex items-center gap-8 w-[38%] relative z-20">
         <WeatherWidget isNight={isNight} />
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           <div className={`flex flex-col border-l-2 pl-6 py-1 transition-colors ${isNight ? 'border-cyan-400/40' : 'border-sky-300'}`}>
             <span className={`text-4xl digital-font font-black tracking-widest leading-none transition-all ${isNight ? 'glow-text text-white' : 'text-slate-800'}`}>{formatTime(time)}</span>
             <span className={`text-[10px] font-black uppercase tracking-[0.2em] mt-1 transition-colors opacity-80 ${isNight ? 'text-cyan-400' : 'text-sky-500'}`}>{formatDate(time)}</span>
           </div>
+          <button 
+            title="返回作战中心"
+            className={`flex items-center justify-center w-10 h-10 border rounded-lg transition-all group hover:scale-105 active:scale-95 ${
+              isNight ? 'bg-cyan-500/10 border-cyan-400/30 text-cyan-400 hover:bg-cyan-500/20' : 'bg-white border-sky-200 text-sky-600 shadow-sm hover:border-sky-400'
+            }`}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -129,13 +142,23 @@ const Header: React.FC<{ time: Date, isNight: boolean, onToggleTheme: () => void
              <ModelWarehouseButton isNight={isNight} />
              <DataBaseButton isNight={isNight} />
            </div>
-           <div 
-             onClick={onToggleTheme}
-             className={`ml-4 cursor-pointer w-12 h-12 flex items-center justify-center rounded-2xl border transition-all ${
-               isNight ? 'bg-slate-900 border-cyan-400/40 text-cyan-400' : 'bg-sky-50 border-sky-200 text-sky-600'
-             }`}
-           >
-             <span className="text-xl">{isNight ? '🌙' : '☀️'}</span>
+           <div className="flex items-center gap-3">
+             <div 
+               onClick={() => setShowCalendar(true)}
+               className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-2xl border transition-all hover:scale-105 active:scale-95 ${
+                 isNight ? 'bg-slate-900 border-cyan-400/40 text-cyan-400 hover:border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.1)]' : 'bg-white border-sky-200 text-sky-600 shadow-sm hover:border-sky-400'
+               }`}
+             >
+               <span className="text-xl">📅</span>
+             </div>
+             <div 
+               onClick={onToggleTheme}
+               className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-2xl border transition-all hover:scale-105 active:scale-95 ${
+                 isNight ? 'bg-slate-900 border-cyan-400/40 text-cyan-400 hover:border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.1)]' : 'bg-sky-50 border-sky-200 text-sky-600 shadow-sm hover:border-sky-400'
+               }`}
+             >
+               <span className="text-xl">{isNight ? '🌙' : '☀️'}</span>
+             </div>
            </div>
         </div>
         <div className="flex flex-col text-right">
@@ -146,6 +169,7 @@ const Header: React.FC<{ time: Date, isNight: boolean, onToggleTheme: () => void
             </div>
         </div>
       </div>
+      {showCalendar && <CalendarOverlay isNight={isNight} onClose={() => setShowCalendar(false)} />}
     </div>
   );
 };
