@@ -4,6 +4,7 @@ interface TaskItem {
   title: string;
   unit: string;
   status: '进行中' | '已完成' | '核查中' | '待处理';
+  details?: string;
 }
 
 const IncidentBoard: React.FC<{ isNight: boolean }> = ({ isNight }) => {

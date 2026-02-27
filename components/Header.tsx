@@ -105,7 +105,8 @@ const Header: React.FC<{ time: Date, isNight: boolean, onToggleTheme: () => void
             <span className={`text-4xl digital-font font-black tracking-widest leading-none transition-all ${isNight ? 'glow-text text-white' : 'text-slate-800'}`}>{formatTime(time)}</span>
             <span className={`text-[10px] font-black uppercase tracking-[0.2em] mt-1 transition-colors opacity-80 ${isNight ? 'text-cyan-400' : 'text-sky-500'}`}>{formatDate(time)}</span>
           </div>
-          <button 
+          <a 
+            href="https://zuozhanzhongxin.netlify.app/"
             title="返回作战中心"
             className={`flex items-center justify-center w-10 h-10 border rounded-lg transition-all group hover:scale-105 active:scale-95 ${
               isNight ? 'bg-cyan-500/10 border-cyan-400/30 text-cyan-400 hover:bg-cyan-500/20' : 'bg-white border-sky-200 text-sky-600 shadow-sm hover:border-sky-400'
@@ -115,7 +116,7 @@ const Header: React.FC<{ time: Date, isNight: boolean, onToggleTheme: () => void
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
               <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
-          </button>
+          </a>
         </div>
       </div>
 
